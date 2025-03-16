@@ -7,7 +7,7 @@ export async function gradeText(
   storyTitle: string
 ): Promise<llmResponse[]> {
   const response = await fetch(
-    "https://7af6-136-24-163-114.ngrok-free.app/chat",
+    "https://71c8-136-24-163-114.ngrok-free.app/chat",
     {
       method: "POST",
       headers: {
@@ -32,7 +32,7 @@ export async function gradeText(
 
 export async function updateGoogleSheet(scoreData: any) {
   const response = await fetch(
-    "https://29b5-174-195-86-53.ngrok-free.app/add-feedback ",
+    "https://5c70-174-195-86-53.ngrok-free.app/add-feedback",
     {
       method: "POST",
       headers: {
