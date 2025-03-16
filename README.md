@@ -1,4 +1,4 @@
-# AI for Good UI 
+# AI for Good UI 💻🌿
 ## Team: ATLAS JV
 
 Welcome to AI for Good UI – where technology meets heart! This project is a sleek, modern user interface built to showcase how artificial intelligence can be harnessed for positive change. Whether you’re a developer, a designer, or simply a tech enthusiast with a passion for making the world a better place, you’re in the right spot.
@@ -96,7 +96,3 @@ This project is open source and available under the MIT License.
 Final Thoughts
 
 Thanks for checking out Team ATLS JV! We believe in the power of technology to create positive change, and we’re excited to have you join us on this journey. Happy coding, and let’s build something amazing together! 🚀
-
-⸻
-
-Feel free to adjust any section to better suit your style or project specifics. Enjoy coding and making the world a better place!
