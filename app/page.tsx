@@ -23,7 +23,7 @@ export default function Home() {
     data: llmResponse[];
     text: string;
   }) => {
-    if (data) {
+    if (data.length > 0) {
       setShowResults(true);
       setData(data);
       setText(text);

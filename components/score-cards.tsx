@@ -156,7 +156,10 @@ export default function ScoreCards({ data }: { data: llmResponse[] }) {
           </div>
         </CardHeader>
         <CardContent>
-          <p className="text-left font-bold">{averageScoreRounded}</p> / 5
+          <p className="text-left">
+            <span className=" text-2xl font-bold">{averageScoreRounded}</span> /
+            5
+          </p>
         </CardContent>
       </Card>
       {scoreData.map((card, index) => (
