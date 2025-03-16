@@ -16,12 +16,28 @@ import { cn } from "@/lib/utils";
 import { llmResponse } from "@/lib/models";
 import { gradeText } from "@/lib/api";
 import { on } from "events";
+import { Input } from "./ui/input";
 
 interface DocumentUploadProps {
-  onSuccess({ data, text }: { data: llmResponse[]; text: string }): void;
+  onSuccess({
+    data,
+    text,
+    name,
+    grade,
+    storyTitle,
+  }: {
+    data: llmResponse[];
+    text: string;
+    name: string;
+    grade: string;
+    storyTitle: string;
+  }): void;
 }
 export default function DocumentUpload({ onSuccess }: DocumentUploadProps) {
   const [file, setFile] = useState<File | null>(null);
+  const [name, setName] = useState("");
+  const [grade, setGrade] = useState("");
+  const [storyTitle, setStoryTitle] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<
     "idle" | "success" | "error"
@@ -53,8 +69,13 @@ export default function DocumentUpload({ onSuccess }: DocumentUploadProps) {
       reader.onload = async (event) => {
         const fileText = event.target?.result;
         console.log("File text:", fileText);
-        const data = await gradeText(fileText as string);
-        onSuccess({ data, text: fileText as string });
+        const data = await gradeText(
+          fileText as string,
+          name,
+          grade,
+          storyTitle
+        );
+        onSuccess({ data, text: fileText as string, name, grade, storyTitle });
         setIsUploading(false);
         setUploadStatus("success");
       };
@@ -64,7 +85,7 @@ export default function DocumentUpload({ onSuccess }: DocumentUploadProps) {
       setUploadStatus("error");
       setErrorMessage("Failed to upload document. Please try again. " + error);
       setIsUploading(false);
-      onSuccess({ data: [], text: "" }); // Reset the text area
+      onSuccess({ data: [], text: "", name: "", grade: "", storyTitle: "" }); // Reset the text area
     }
   };
 
@@ -75,6 +96,27 @@ export default function DocumentUpload({ onSuccess }: DocumentUploadProps) {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit}>
+          <Input
+            type="text"
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="mb-4"
+          />
+          <Input
+            type="text"
+            placeholder="Grade"
+            value={grade}
+            onChange={(e) => setGrade(e.target.value)}
+            className="mb-4"
+          />
+          <Input
+            type="text"
+            placeholder="Story Title"
+            value={storyTitle}
+            onChange={(e) => setStoryTitle(e.target.value)}
+            className="mb-4"
+          />
           <div
             className={cn(
               "border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors",
