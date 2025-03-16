@@ -11,9 +11,10 @@ import { Button } from "./ui/button";
 import { llmResponse } from "@/lib/models";
 import { gradeText } from "@/lib/api";
 import { AlertCircle } from "lucide-react";
+import ScoreCards from "./score-cards";
 
 interface TextAreaCardProps {
-  onSuccess(data: llmResponse[] | null): void;
+  onSuccess({ data, text }: { data: llmResponse[]; text: string }): void;
 }
 
 export default function TextAreaCard({ onSuccess }: TextAreaCardProps) {
@@ -30,24 +31,23 @@ export default function TextAreaCard({ onSuccess }: TextAreaCardProps) {
     setIsUploading(true);
     // setUploadStatus("idle");
     try {
-      console.log(text);
-
       const data = await gradeText(text);
       console.log("Response data:", data);
 
       setIsUploading(false);
-      onSuccess(data);
+      onSuccess({ data, text });
+      setUploadStatus("success");
     } catch (error) {
       console.error("error:", error);
       setUploadStatus("error");
       setErrorMessage("Failed to grade the document. Please try again.");
       setIsUploading(false);
-      onSuccess(null);
+      onSuccess({ data: [], text: "" }); // Reset the text area
     }
   };
+
   return (
     <>
-      {" "}
       <Card className="w-full">
         <CardHeader>
           <CardTitle>Type or paste text</CardTitle>
@@ -56,15 +56,17 @@ export default function TextAreaCard({ onSuccess }: TextAreaCardProps) {
           <form onSubmit={handleSubmit}>
             <Textarea
               name="textarea"
+              className="min-h-52 max-h-96"
               value={text}
               onChange={(e) => setText(e.target.value)}
             ></Textarea>
             <Button
               type="submit"
               className="w-full mt-4"
-              disabled={isUploading}
+              variant={"teal"}
+              disabled={isUploading || text.length === 0}
             >
-              {isUploading ? "Grading..." : "Grade"}
+              {isUploading ? <span className="ellipsis"></span> : "Grade"}
             </Button>
           </form>
         </CardContent>

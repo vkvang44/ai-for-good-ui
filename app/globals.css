@@ -92,3 +92,27 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Add this to your global CSS file or a CSS module */
+@keyframes ellipsis {
+  0% {
+    content: "Grading";
+  }
+  25% {
+    content: "Grading.";
+  }
+  50% {
+    content: "Grading..";
+  }
+  75% {
+    content: "Grading...";
+  }
+  100% {
+    content: "Grading";
+  }
+}
+
+.ellipsis::after {
+  content: "Grading";
+  animation: ellipsis 2s steps(4, end) infinite;
+}

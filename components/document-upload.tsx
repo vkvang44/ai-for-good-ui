@@ -18,7 +18,7 @@ import { gradeText } from "@/lib/api";
 import { on } from "events";
 
 interface DocumentUploadProps {
-  onSuccess(data: llmResponse[] | null): void;
+  onSuccess({ data, text }: { data: llmResponse[]; text: string }): void;
 }
 export default function DocumentUpload({ onSuccess }: DocumentUploadProps) {
   const [file, setFile] = useState<File | null>(null);
@@ -54,7 +54,7 @@ export default function DocumentUpload({ onSuccess }: DocumentUploadProps) {
         const fileText = event.target?.result;
         console.log("File text:", fileText);
         const data = await gradeText(fileText as string);
-        onSuccess(data);
+        onSuccess({ data, text: fileText as string });
         setIsUploading(false);
         setUploadStatus("success");
       };
@@ -64,6 +64,7 @@ export default function DocumentUpload({ onSuccess }: DocumentUploadProps) {
       setUploadStatus("error");
       setErrorMessage("Failed to upload document. Please try again. " + error);
       setIsUploading(false);
+      onSuccess({ data: [], text: "" }); // Reset the text area
     }
   };
 
@@ -127,9 +128,10 @@ export default function DocumentUpload({ onSuccess }: DocumentUploadProps) {
           <Button
             type="submit"
             className="w-full mt-4"
+            variant={"teal"}
             disabled={isUploading || !file}
           >
-            {isUploading ? "Grading..." : "Grade"}
+            {isUploading ? <span className="ellipsis"></span> : "Grade"}
           </Button>
         </form>
       </CardContent>
