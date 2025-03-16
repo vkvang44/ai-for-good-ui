@@ -38,7 +38,7 @@ export default function Home() {
   const handleGradeDocument = () => {
     setTimeout(() => {
       setIsGraded(true);
-    }, 400); // Match this with the animation duration
+    }, 600); // Match this with the animation duration
   };
 
   const handleClick = () => {

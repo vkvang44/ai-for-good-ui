@@ -2,7 +2,7 @@ import { llmResponse } from "./models";
 
 export async function gradeText(text: string): Promise<llmResponse[]> {
   const response = await fetch(
-    "https://3eaa-136-24-163-114.ngrok-free.app/chat",
+    "https://e4fe-136-24-163-114.ngrok-free.app/chat",
     {
       method: "POST",
       headers: {
