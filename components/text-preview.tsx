@@ -7,7 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import { Textarea } from "./ui/textarea";
 
 export default function TextPreview({ text }: { text: string }) {
   return (

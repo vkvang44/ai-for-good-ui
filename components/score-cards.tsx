@@ -120,21 +120,6 @@ function ScoreCard({
   );
 }
 
-function getScore(score: string) {
-  switch (score) {
-    case "Exceptional":
-      return 5;
-    case "Experienced":
-      return 4;
-    case "Proficient":
-      return 3;
-    case "Emerging":
-      return 2;
-    default:
-      return 1;
-  }
-}
-
 function getCategory(score: number) {
   switch (score) {
     case 5:

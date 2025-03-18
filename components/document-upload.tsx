@@ -15,30 +15,18 @@ import { Upload, File, CheckCircle, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { llmResponse } from "@/lib/models";
 import { gradeText } from "@/lib/api";
-import { on } from "events";
 import { Input } from "./ui/input";
+import ScoreCards from "./score-cards";
 
-interface DocumentUploadProps {
-  onSuccess({
-    data,
-    text,
-    name,
-    grade,
-    storyTitle,
-  }: {
-    data: llmResponse[];
-    text: string;
-    name: string;
-    grade: string;
-    storyTitle: string;
-  }): void;
-}
-export default function DocumentUpload({ onSuccess }: DocumentUploadProps) {
+export default function DocumentUpload() {
   const [file, setFile] = useState<File | null>(null);
+  const [showResults, setShowResults] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [text, setText] = useState("");
   const [name, setName] = useState("");
   const [grade, setGrade] = useState("");
   const [storyTitle, setStoryTitle] = useState("");
-  const [isUploading, setIsUploading] = useState(false);
+  const [data, setData] = useState<llmResponse[]>([]);
   const [uploadStatus, setUploadStatus] = useState<
     "idle" | "success" | "error"
   >("idle");
@@ -75,7 +63,6 @@ export default function DocumentUpload({ onSuccess }: DocumentUploadProps) {
           grade,
           storyTitle
         );
-        onSuccess({ data, text: fileText as string, name, grade, storyTitle });
         setIsUploading(false);
         setUploadStatus("success");
       };
@@ -85,101 +72,114 @@ export default function DocumentUpload({ onSuccess }: DocumentUploadProps) {
       setUploadStatus("error");
       setErrorMessage("Failed to upload document. Please try again. " + error);
       setIsUploading(false);
-      onSuccess({ data: [], text: "", name: "", grade: "", storyTitle: "" }); // Reset the text area
     }
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Upload Document</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit}>
-          <Input
-            type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="mb-4"
-          />
-          <Input
-            type="text"
-            placeholder="Grade"
-            value={grade}
-            onChange={(e) => setGrade(e.target.value)}
-            className="mb-4"
-          />
-          <Input
-            type="text"
-            placeholder="Story Title"
-            value={storyTitle}
-            onChange={(e) => setStoryTitle(e.target.value)}
-            className="mb-4"
-          />
-          <div
-            className={cn(
-              "border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors",
-              file ? "border-primary" : "border-muted"
-            )}
-            onClick={() => document.getElementById("file-upload")?.click()}
-          >
-            <input
-              id="file-upload"
-              type="file"
-              className="hidden"
-              onChange={handleFileChange}
-              accept=".pdf,.doc,.docx,.txt"
-            />
+    <>
+      {!showResults ? (
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle>Upload Document</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit}>
+              <Input
+                type="text"
+                placeholder="Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="mb-4"
+              />
+              <Input
+                type="text"
+                placeholder="Grade"
+                value={grade}
+                onChange={(e) => setGrade(e.target.value)}
+                className="mb-4"
+              />
+              <Input
+                type="text"
+                placeholder="Story Title"
+                value={storyTitle}
+                onChange={(e) => setStoryTitle(e.target.value)}
+                className="mb-4"
+              />
+              <div
+                className={cn(
+                  "border-2 border-dashed rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors",
+                  file ? "border-primary" : "border-muted"
+                )}
+                onClick={() => document.getElementById("file-upload")?.click()}
+              >
+                <input
+                  id="file-upload"
+                  type="file"
+                  className="hidden"
+                  onChange={handleFileChange}
+                  accept=".pdf,.doc,.docx,.txt"
+                />
 
-            {file ? (
-              <div className="flex items-center gap-2 text-sm">
-                <File className="h-5 w-5 text-primary" />
-                <span className="font-medium">{file.name}</span>
-                <span className="text-muted-foreground">
-                  ({(file.size / 1024).toFixed(1)} KB)
-                </span>
+                {file ? (
+                  <div className="flex items-center gap-2 text-sm">
+                    <File className="h-5 w-5 text-primary" />
+                    <span className="font-medium">{file.name}</span>
+                    <span className="text-muted-foreground">
+                      ({(file.size / 1024).toFixed(1)} KB)
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center gap-2 py-4">
+                    <Upload className="h-10 w-10 text-muted-foreground" />
+                    <p className="text-sm font-medium">
+                      Drag and drop your document or click to browse
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Supports PDF, DOC, DOCX, and TXT files
+                    </p>
+                  </div>
+                )}
               </div>
-            ) : (
-              <div className="flex flex-col items-center gap-2 py-4">
-                <Upload className="h-10 w-10 text-muted-foreground" />
-                <p className="text-sm font-medium">
-                  Drag and drop your document or click to browse
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Supports PDF, DOC, DOCX, and TXT files
-                </p>
-              </div>
-            )}
-          </div>
 
-          {uploadStatus === "error" && (
-            <div className="mt-4 flex items-start gap-2 text-destructive text-sm">
-              <AlertCircle className="h-4 w-4 mt-0.5" />
-              <span>{errorMessage}</span>
-            </div>
-          )}
+              {uploadStatus === "error" && (
+                <div className="mt-4 flex items-start gap-2 text-destructive text-sm">
+                  <AlertCircle className="h-4 w-4 mt-0.5" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
 
-          {uploadStatus === "success" && (
-            <div className="mt-4 flex items-center gap-2 text-primary text-sm">
-              <CheckCircle className="h-4 w-4" />
-              <span>Document uploaded successfully!</span>
-            </div>
-          )}
+              {uploadStatus === "success" && (
+                <div className="mt-4 flex items-center gap-2 text-primary text-sm">
+                  <CheckCircle className="h-4 w-4" />
+                  <span>Document uploaded successfully!</span>
+                </div>
+              )}
 
-          <Button
-            type="submit"
-            className="w-full mt-4"
-            variant={"teal"}
-            disabled={isUploading || !file}
-          >
-            {isUploading ? <span className="ellipsis"></span> : "Grade"}
-          </Button>
-        </form>
-      </CardContent>
-      <CardFooter className="text-xs text-muted-foreground">
-        Your document will be processed securely.
-      </CardFooter>
-    </Card>
+              <Button
+                type="submit"
+                className="w-full mt-4"
+                variant={"teal"}
+                disabled={isUploading || !file}
+              >
+                {isUploading ? <span className="ellipsis"></span> : "Grade"}
+              </Button>
+            </form>
+          </CardContent>
+          <CardFooter className="text-xs text-muted-foreground">
+            Your document will be processed securely.
+          </CardFooter>
+        </Card>
+      ) : (
+        <ScoreCards
+          data={data}
+          text={text}
+          showResults={showResults}
+          handleClick={(showResults) => setShowResults(showResults)}
+          name={name}
+          grade={grade}
+          storyTitle={storyTitle}
+        />
+      )}
+    </>
   );
 }
